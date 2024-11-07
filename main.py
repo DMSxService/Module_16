@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
+from typing import Annotated
 
 app = FastAPI()
 
@@ -23,9 +24,11 @@ async def id_paginator(username: str = 'Kostula', age: int = 24) -> dict:
     return {"User": username, "Age": age}
 
 
-@app.get("/user/{first_name}/{last_name}")
-async def news(first_name: str, last_name: str) -> dict:
-    return {"message": f"Hello, {first_name} {last_name}"}
+@app.get("/user/{username}/{id}")
+async def news(username: Annotated[str, Path(min_length=3, max_length=15,
+                                             description="Enter your username",
+                                             example="montes")], id: int) -> dict:
+    return {"message": f"Hello, {username}:{id}"}
 
 # Get - адрес в строке ?переменная=значение
 # Post - формы - оформить заказ в магазине
