@@ -1,36 +1,42 @@
 from fastapi import FastAPI, Path
-from typing import Annotated
+
 
 app = FastAPI()
 
+messages_db = {"0": "First post in FastApi"}
+
 
 @app.get("/")
-async def welcome() -> dict:
-    return {"message": "Hello World"}
+async def get_all_messages() -> dict:
+    return messages_db
 
 
-@app.get("/user/A/B")
-async def news() -> dict:
-    return {"message": f"Hello, Tester!"}
+@app.get("/message/{message_id}")
+async def get_messages(message_id: str) -> dict:
+    return messages_db[message_id]
 
 
-@app.get("/main")
-async def welcome() -> dict:
-    return {"message": "Main page"}
+@app.post("/message")
+async def create_message(message: str) -> str:
+    current_index = str(int(max(messages_db, key=int))+1)
+    messages_db[current_index] = message
+    return "Message created!"
 
 
-@app.get("/id")
-async def id_paginator(username: str = 'Kostula', age: int = 24) -> dict:
-    return {"User": username, "Age": age}
+@app.put("/message/{messages_db}")
+async def update_message(message_id: str, message: str) -> str:
+    messages_db[message_id] = message
+    return "Message updated."
 
 
-@app.get("/user/{username}/{id}")
-async def news(username: Annotated[str, Path(min_length=3, max_length=15,
-                                             description="Enter your username",
-                                             example="montes")], id: int) -> dict:
-    return {"message": f"Hello, {username}:{id}"}
+@app.delete("/message/{message_id}")
+async def delete_message(message_id: str) -> str:
+    messages_db.pop(message_id)
+    return f"Message with {message_id} was deleted."
 
-# Get - адрес в строке ?переменная=значение
-# Post - формы - оформить заказ в магазине
-# Put - что-то обновить
-# Delete - что-то удалить
+
+@app.delete("/")
+async def delete_all_messages() -> str:
+    messages_db.clear()
+    return "All messages deleted"
+
