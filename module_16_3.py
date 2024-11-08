@@ -11,18 +11,18 @@ async def get_all_users() -> dict:
     return users
 
 
-@app.post("/users/{username}/{age}")
+@app.post("/user/{username}/{age}")
 async def register_user(username: Annotated[str, Path(min_length=5, max_length=20,
                                                       description="Enter username",
                                                       example="UrbanUser")],
                         age: Annotated[int, Path(ge=18, le=120,
                                                  description="Enter age", example="24")]) -> str:
     user_id = str(int(max(users, key=int)) + 1)
-    users[user_id] = f'Имя: {username}, возраст: {age}'
+    users[str(user_id)] = f'Имя: {username}, возраст: {age}'
     return f"User {user_id} is registered"
 
 
-@app.put("/message/{user_id}/{username}/{age}")
+@app.put("/user/{user_id}/{username}/{age}")
 async def update_users_info(user_id: Annotated[int, Path(ge=1, le=100,
                                                          description="Enter User ID",
                                                          example="1")],
@@ -31,11 +31,11 @@ async def update_users_info(user_id: Annotated[int, Path(ge=1, le=100,
                                                           example="UrbanProfi")],
                             age: Annotated[int, Path(ge=18, le=120,
                                                      description="Enter age", example="28")]) -> str:
-    users[user_id] = f'Имя: {username}, возраст: {age}'
+    users[str(user_id)] = f'Имя: {username}, возраст: {age}'
     return f"User {user_id} has been updated"
 
 
-@app.delete("/message/{user_id}")
+@app.delete("/user/{user_id}")
 async def delete_user(user_id: Annotated[int, Path(ge=1, le=100,
                                                    description="Enter User ID",
                                                    example="2")]) -> str:
